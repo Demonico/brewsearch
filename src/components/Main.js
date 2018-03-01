@@ -6,31 +6,43 @@ import Header from './Header';
 import Footer from './Footer';
 import SearchForm from './SearchForm';
 import SearchResults from './SearchResults';
+import BeerModal from './BeerModal';
 
 export default class Main extends Component {
   constructor() {
     super();
     this.getBeers = this.getBeers.bind(this);
     this.sortList = this.sortList.bind(this);
+    // this.openModal = this.openModal.bind(this);
     this.state = {
-      beer: []
+      beer: [],
+      selectedBeer: false,
+      beerDetails: {}
     };
   }
-
+  // openModal = (beerDetails) => {
+  //   this.setState(() => ({ 
+  //     selectedBeer: true,
+  //     beerDetails
+  //    }));
+  // }
+  // closeModal = () => {
+  //   this.setState(() => ({ selectedBeer: false }));
+  // }
 
   componentWillMount() {
     this.getBeers();
   };
 
   getBeers(searchParams = {}) {
-    console.log(searchParams);
+    // console.log(searchParams);
     const baseURL = 'https://api.punkapi.com/v2/beers/';
     // asign value of each entry
     const { searchField = '', searchType = 'beer_name' } = searchParams;
     // conditionally change search url
     const searchText = searchField.split(' ').join('_');
     const searchURL = `${baseURL}?${searchType}=${searchText}`
-    console.log(searchURL);
+    // console.log(searchURL);
     if (searchText !== '') {
       axios.get(searchURL)
         .then(response => {
@@ -86,9 +98,9 @@ export default class Main extends Component {
   render() {
     const beerItems = this.state.beer.map((b) => {
       return (
-        <div key={b.id} className="col-6 col-md-4">
-          <SearchResults beer={b} />
-          {/* <BeerModal beer={b} /> */}
+        <div key={b.id} className="col-6 col-md-4 col-lg-3">
+          <SearchResults beer={b} openModal={this.openModal}/>
+          <BeerModal beer={b} closeModal={this.closeModal} />
         </div>
       )
     })
@@ -101,7 +113,7 @@ export default class Main extends Component {
             sortList={this.sortList}
           />
         </div>
-        <div className="row">{beerItems}</div>
+        <div className="row">{beerItems}</div>        
         <Footer />
       </div>
     )
